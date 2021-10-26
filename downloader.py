@@ -36,8 +36,6 @@ def downloadFromYT(video):
         x = json.loads(x1)
         # Simplify JSON erasing dump info
 
-        print(x)
-
         if x["type"] == "video":
             # s = '{"id":"' + x["itag"] + '","type":"' + x["type"] + '","resolution":"' + x["res"] + '","fps":"' + x["fps"] + '"}'
             videos.append(x1)
