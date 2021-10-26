@@ -16,5 +16,5 @@ Descarga facil videos de plataformas como Youtube, Actualmente en fase beta y so
     ```
   4. Inicia la aplicación
     ```
-      py downloader.py
+      python downloader.py
     ```
