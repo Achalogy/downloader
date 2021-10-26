@@ -8,7 +8,7 @@ print("""
 ===============================
 =        FreeDownloads        =
 =        by : Achalogy        =
-=       version : 2.0.0       =
+=       version : 2.0.1       =
 ===============================
 
 """)
@@ -88,6 +88,11 @@ Selecciona el tipo de descarga que quieres
         num = 0;
         for cal in videos:
             num += 1
+
+            if num == 1:
+                print("Video con audio")
+            elif num == 4:
+                print("Audio Separado")
             print(str(num) + ") " + json.loads(cal)["res"] + " " + json.loads(cal)["fps"] + " codec: " + json.loads(cal)["vcodec"])
             opts.append(json.loads(cal)["itag"])
 
