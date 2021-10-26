@@ -123,7 +123,7 @@ Selecciona el tipo de descarga que quieres
             HD = video.streams.filter(only_audio=True).last()
 
             print("Ahora selecciona el archivo de Audio a descargar")
-            print("     0) Mayor calidad: " + str(round(video.streams.filter(only_audio=True).last().filesize_approx / 1048576, 1)) + "Mb")
+            print("     0) Mayor calidad: " + str(round(HD.filesize_approx / 1048576, 1)) + "Mb")
 
             num = 0
             for cal in audios:
