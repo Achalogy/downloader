@@ -64,8 +64,8 @@ Selecciona el tipo de descarga que quieres
 
         if video.streams.get_by_itag(id).includes_audio_track:
             print("Descargando " + str(round(video.streams.get_by_itag(id).filesize_approx / 1048576, 1)) + "MB")
-            video.streams.get_by_itag(id).download() # Mismo directorio
-            # video.streams.get_by_itag(id).download(output_path = "/sdcard/Download") # Directorio Descargas ( Termux )
+            # video.streams.get_by_itag(id).download() # Mismo directorio
+            video.streams.get_by_itag(id).download(output_path = "/sdcard/DCIM/Download") # Directorio Descargas ( Termux )
             print("Video Descargado")
         else:
             fvideo = video.streams.get_by_itag(id)
@@ -84,8 +84,8 @@ Selecciona el tipo de descarga que quieres
             print("Video Descargado")
             audioFile = ffmpeg.input(file_audio)
             print("Audio Descargado")
-            ffmpeg.output(audioFile, videoFile, (video.title + ".mp4")).run() # Mismo directorio
-            # ffmpeg.output(audioFile, videoFile, ("/sdcard/Download/" + video.title + ".mp4")).run() # Directorio Descargas ( Termux )
+            # ffmpeg.output(audioFile, videoFile, (video.title + ".mp4")).run() # Mismo directorio
+            ffmpeg.output(audioFile, videoFile, ("/sdcard/DCIM/Download/" + video.title + ".mp4")).run() # Directorio Descargas ( Termux )
             print("Video Completado")
             print("Eliminando archivos basura...")
             remove(file_video)
