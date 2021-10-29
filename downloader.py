@@ -1,14 +1,18 @@
-import json
+import os
 from pytube import YouTube
+import instaloader
+from instaloader import Post
 import ffmpeg
-from os import remove
+import json
+import shutil
+import sys 
 
 print(""" 
 
 ===============================
 =        FreeDownloads        =
 =        by : Achalogy        =
-=       version : 2.1.0       =
+=       version : 3.0.1       =
 ===============================
 
 """)
@@ -18,12 +22,13 @@ def selectPlatform():
 Selecciona la plataforma en la que quieres descargar
 
      1) YouTube
+     2) Instagram
      0) Salir
     """)
 
     return input() 
 
-def downloadFromYT(video):
+def downloadFromYT(video, downloadDir):
     print(video.title + ' esta listo para descargar')
 
     ress = video.streams
@@ -34,13 +39,9 @@ def downloadFromYT(video):
     for x in ress:
         x1 = '{"' + str(x)[9:-1].replace(" ", ', "').replace('=', '":') + "}"
         x = json.loads(x1)
-        # Simplify JSON erasing dump info
-
         if x["type"] == "video":
-            # s = '{"id":"' + x["itag"] + '","type":"' + x["type"] + '","resolution":"' + x["res"] + '","fps":"' + x["fps"] + '"}'
             videos.append(x1)
         else:
-            # s = '{"id":"' + x["itag"] + '","type":"' + x["type"] + '","abr":"' + x["abr"] + '"}'
             audios.append(str(x1))
 
     print("""
@@ -55,17 +56,13 @@ Selecciona el tipo de descarga que quieres
     opts = []
     optsAud = []
 
-    # def download(video, id):
-    #     video.streams.get_by_itag(id).download()
-    #     print("Video Descargado")
-
     def download(video, id, aud):
 
 
         if video.streams.get_by_itag(id).includes_audio_track:
             print("Descargando " + str(round(video.streams.get_by_itag(id).filesize_approx / 1048576, 1)) + "MB")
-            # video.streams.get_by_itag(id).download() # Mismo directorio
-            video.streams.get_by_itag(id).download(output_path = "/sdcard/DCIM/Download") # Directorio Descargas ( Termux )
+            fileD = video.streams.get_by_itag(id).download() 
+            shutil.move(fileD, downloadDir)
             print("Video Descargado")
         else:
             fvideo = video.streams.get_by_itag(id)
@@ -84,13 +81,14 @@ Selecciona el tipo de descarga que quieres
             print("Video Descargado")
             audioFile = ffmpeg.input(file_audio)
             print("Audio Descargado")
-            # ffmpeg.output(audioFile, videoFile, (video.title + ".mp4")).run() # Mismo directorio
-            ffmpeg.output(audioFile, videoFile, ("/sdcard/DCIM/Download/" + video.title + ".mp4")).run() # Directorio Descargas ( Termux )
+            fileD = ffmpeg.output(audioFile, videoFile, ("./" + video.title + ".mp4")).run() # Mismo directorio
             print("Video Completado")
             print("Eliminando archivos basura...")
-            remove(file_video)
-            remove(file_audio)
+            os.remove(file_video)
+            os.remove(file_audio)
             print("Archivos eliminados")
+
+            shutil.move("./" + video.title + ".mp4", downloadDir)
 
     if t == "0":
         exit()
@@ -166,20 +164,54 @@ Selecciona el tipo de descarga que quieres
     else:
         print('Selecciona una opcion valida')
 
+def downloadFromIg(post, insta, downloadDir):
+    insta.download_post(post, target="InstagramTemp")
+    files = os.listdir("./InstagramTemp")
 
+    for item in files:
+        if item.endswith(".json.xz") | item.endswith(".txt"): 
+            os.remove(os.path.join("./InstagramTemp/" + item))
+        else:
+            shutil.move("./InstagramTemp/" + item, downloadDir)
+
+
+downloadDir = "./"
+
+if len(sys.argv) > 1:
+    if sys.argv[1] == "-D":
+        print('case 1')
+        downloadDir = sys.argv[2]
+
+        if not downloadDir.endswith("/"):
+            downloadDir = str(sys.argv[2] + "/")
+
+    elif sys.argv[1] == "-T":
+        downloadDir = "/sdcard/DCIM/Download"
+    
+    else:
+        downloadDir = downloadDir
 
 s = selectPlatform()
+
+print("Dirección de Descarga: " + downloadDir)
 
 if s == "0":
     exit()
 elif s == "1": 
-    # try:
+    try:
         video = YouTube(input('url: '))
-        downloadFromYT(video)
-    # except:
-        # print('Por Favor usa una url valida')
+        downloadFromYT(video, downloadDir)
+    except:
+        print('Algo salio mal, asegurate que usaste una URL valida.')
+elif s == "2":
+
+    insta = instaloader.Instaloader()
+
+    try:
+        post = Post.from_shortcode(insta.context, (input("URL:")[28:])[:11])
+        downloadFromIg(post, insta, downloadDir)
+    except:
+        print('Algo salio mal, asegurate que usaste una URL valida.')
+
 else:
     print('Elige una opcion')
-
-
-
