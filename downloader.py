@@ -6,13 +6,15 @@ import ffmpeg
 import json
 import shutil
 import sys 
+import time
+import datetime
 
 print(""" 
 
 ===============================
 =        FreeDownloads        =
 =        by : Achalogy        =
-=       version : 3.0.1       =
+=       version : 3.0.3       =
 ===============================
 
 """)
@@ -58,10 +60,13 @@ Selecciona el tipo de descarga que quieres
 
     def download(video, id, aud):
 
+        date = datetime.datetime.now()
+        now = time.mktime(date.timetuple())
 
         if video.streams.get_by_itag(id).includes_audio_track:
             print("Descargando " + str(round(video.streams.get_by_itag(id).filesize_approx / 1048576, 1)) + "MB")
             fileD = video.streams.get_by_itag(id).download() 
+            os.utime(fileD (now, now))            
             shutil.move(fileD, downloadDir)
             print("Video Descargado")
         else:
@@ -88,7 +93,16 @@ Selecciona el tipo de descarga que quieres
             os.remove(file_audio)
             print("Archivos eliminados")
 
-            shutil.move("./" + video.title + ".mp4", downloadDir)
+            os.utime("./" + video.title + ".mp4", (now, now))
+
+            try:
+                
+                shutil.move("./" + video.title + ".mp4", downloadDir)
+
+            except:
+
+                print('El archivo no se pudo mover o ya existe.')
+
 
     if t == "0":
         exit()
@@ -159,7 +173,7 @@ Selecciona el tipo de descarga que quieres
 
         opt = input("")
 
-        download(video, opts[int(opt)-1])
+        download(video, opts[int(opt)-1], 0)
 
     else:
         print('Selecciona una opcion valida')
@@ -172,14 +186,24 @@ def downloadFromIg(post, insta, downloadDir):
         if item.endswith(".json.xz") | item.endswith(".txt"): 
             os.remove(os.path.join("./InstagramTemp/" + item))
         else:
-            shutil.move("./InstagramTemp/" + item, downloadDir)
+
+            date = datetime.datetime.now()
+            now = time.mktime(date.timetuple())
+            os.utime("./InstagramTemp/" + item, (now, now))
+
+            try:
+
+                shutil.move("./InstagramTemp/" + item, downloadDir)
+
+            except:
+
+                print('El archivo no se pudo mover o ya existe.')
 
 
 downloadDir = "./"
 
 if len(sys.argv) > 1:
     if sys.argv[1] == "-D":
-        print('case 1')
         downloadDir = sys.argv[2]
 
         if not downloadDir.endswith("/"):
