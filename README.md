@@ -21,6 +21,8 @@ Descargar la Realease Android mas reciente.
 
     pip install -r requirements.txt
     
+    pkg install ffmpeg  # sólo termux
+
   4. Inicia la aplicación
   
     python downloader.py
